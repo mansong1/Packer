@@ -25,6 +25,7 @@
         - lvm2
         - amazon-linux-extras
         - java-1.8.0-openjdk
+        - maven
     become: yes
 
   - name: Install docker-ce (centos) via amazon-linux-extras packages

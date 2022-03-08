@@ -8,3 +8,4 @@ crash.log
 *.box
 
 .dccache
+manifest.json
