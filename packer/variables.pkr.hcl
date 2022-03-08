@@ -1,6 +1,6 @@
 variable "region" {
   type    = string
-  default = "us-east-1"
+  default = "us-east-2"
 }
 
 variable "instance_type" {
@@ -11,4 +11,9 @@ variable "instance_type" {
 variable "ami_name" {
   type    = string
   default = "linux-cie"
+}
+
+variable "ssh_username" {
+  type    = string
+  default = "ec2-user"
 }
