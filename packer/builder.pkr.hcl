@@ -1,8 +1,9 @@
-packer {
-  required_plugins {
-    amazon = {
-      version = ">= 0.0.2"
-      source  = "github.com/hashicorp/amazon"
-    }
+build {
+  name = "linux-cie"
+  sources = [
+    "source.amazon-ebs.vm"
+  ]
+  provisioner "ansible" {
+    playbook_file = "../ansible/linux-cie.yml"
   }
 }
