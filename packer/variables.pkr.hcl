@@ -5,7 +5,7 @@ variable "region" {
 
 variable "instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t3.large"
 }
 
 variable "ami_name" {
@@ -16,4 +16,9 @@ variable "ami_name" {
 variable "ssh_username" {
   type    = string
   default = "ec2-user"
+}
+
+variable "owner_id" {
+  type    = string
+  default = "amazon"
 }
