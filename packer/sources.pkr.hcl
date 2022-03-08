@@ -17,7 +17,8 @@ source "amazon-ebs" "vm" {
   region        = "${var.region}"
   source_ami_filter {
     filters = {
-      name                = ""
+      name                = "*amzn2-ami-hvm-*"
+      architecture        = "x86_64"
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
