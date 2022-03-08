@@ -8,6 +8,16 @@
     shell: "amazon-linux-extras install -y java-openjdk11"
     become: yes
 
+  - name: Download Apache-Maven
+    become: yes
+    get_url:
+      url: https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo
+      dest: /etc/yum.repos.d/epel-apache-maven.repo
+
+  - name: Set release version
+    shell: sed -i 's/\$releasever/8/g' /etc/yum.repos.d/epel-apache-maven.repo
+    become: yes
+
   - name: Add extras repository
     shell: yum-config-manager --enable extras
     become: yes
@@ -24,8 +34,9 @@
         - device-mapper-persistent-data
         - lvm2
         - amazon-linux-extras
-        - java-1.8.0-openjdk
-        - maven
+        - java-1.8.0-devel
+        - apache-maven
+        - git
     become: yes
 
   - name: Install docker-ce (centos) via amazon-linux-extras packages
