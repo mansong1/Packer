@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  tasks:
+  - name: Enable Java for amazon linux 2
+    shell: "amazon-linux-extras install -y java-openjdk11"
+    become: yes
+
+  - name: Add extras repository
+    shell: yum-config-manager --enable extras
+    become: yes
+
+  - name: Ensure yum packages are installed
+    yum:
+      name: "{{ packages }}"
+      state: latest
+      update_cache: yes
+    vars:
+      packages:
+        - python-pip
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+        - amazon-linux-extras
+        - java-1.8.0-openjdk
+        - maven
+    become: yes
+
+  - name: Install docker-ce (centos) via amazon-linux-extras packages
+    shell: "amazon-linux-extras install docker -y"
+
+  - name: Enable Docker CE service at startup
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Ensure Python pip packages are installed
+    pip:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - boto
+      - boto3
+      - docker-compose
