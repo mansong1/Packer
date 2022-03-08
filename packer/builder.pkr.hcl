@@ -4,7 +4,7 @@ build {
     "source.amazon-ebs.vm"
   ]
   provisioner "ansible" {
-    playbook_file = "../ansible/linux-cie.yml"
+    playbook_file = "../ansible/linux.yml"
   }
 
   post-processor "manifest" {
