@@ -3,23 +3,14 @@
   become: yes
   become_user: root
   become_method: sudo
+  gather_facts: no
   tasks:
-  - name: Enable Java for amazon linux 2
-    shell: "amazon-linux-extras install -y java-openjdk11"
-    become: yes
-
-  - name: Download Apache-Maven
-    become: yes
-    get_url:
-      url: https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo
-      dest: /etc/yum.repos.d/epel-apache-maven.repo
-
-  - name: Set release version
-    shell: sed -i 's/\$releasever/8/g' /etc/yum.repos.d/epel-apache-maven.repo
-    become: yes
-
   - name: Add extras repository
     shell: yum-config-manager --enable extras
+    become: yes
+
+  - name: Enable Java for amazon linux 2
+    shell: "amazon-linux-extras install -y java-openjdk11"
     become: yes
 
   - name: Ensure yum packages are installed
@@ -34,13 +25,16 @@
         - device-mapper-persistent-data
         - lvm2
         - amazon-linux-extras
-        - java-1.8.0-devel
-        - apache-maven
+        - java-1.8.0-openjdk-devel
         - git
     become: yes
 
   - name: Install docker-ce (centos) via amazon-linux-extras packages
     shell: "amazon-linux-extras install docker -y"
+
+  - name: Add user to docker group
+    shell: "usermod -aG docker $USER"
+    become: yes
 
   - name: Enable Docker CE service at startup
     service:
@@ -56,3 +50,39 @@
       - boto
       - boto3
       - docker-compose
+
+  # Install Maven
+  - name: Download and Unarchive Apache-Maven
+    become: yes
+    unarchive:
+      src: https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+      dest: /opt
+      mode: 755
+      copy: no
+
+  - name: Create maven symlink to /usr/bin
+    file:
+      src: /opt/apache-maven-3.8.4/bin/mvn
+      dest: /usr/bin/mvn
+      state: link
+
+  - name: Configure maven and its environment variables
+    lineinfile:
+      dest: "/etc/profile.d/maven.sh"
+      line: "{{ item.line }}"
+      create: yes
+      state: present
+    with_items:
+      - { line: 'M2_HOME=/opt/apache-maven-3.8.4' }
+      - { line: 'PATH=$PATH:$M2_HOME/bin' }
+
+  - name: Exports/Run maven env file for make M2_HOME available globally
+    shell: "source /etc/profile.d/maven.sh"
+
+  - name: Checking the version of maven
+    shell: mvn -version
+    register: result
+
+  - name: Output of maven version
+    debug:
+      var: result.stdout
